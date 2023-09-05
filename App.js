@@ -94,7 +94,18 @@ export default function App() {
             <Image source={{ uri: lastSelfieUri }} style={styles.fullScreenImage} />
           )}
           {selectedImageUri && (
-            <Image source={{ uri: selectedImageUri }} style={styles.fullScreenImagePreview} />
+            <>
+              <Image source={{ uri: selectedImageUri }} style={styles.fullScreenImagePreview} />
+              <Text style={styles.imageTitle}>
+                {new Date(
+                  parseInt(selectedImageUri.split('/').pop().split('.jpg')[0], 10),
+                ).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </Text>
+            </>
           )}
         </Camera>
       </TouchableWithoutFeedback>
@@ -163,5 +174,14 @@ const styles = StyleSheet.create({
   },
   trashIcon: {
     fontSize: 36, // Made the icon smaller
+  },
+  imageTitle: {
+    position: 'absolute',
+    bottom: 20,
+    fontSize: 24,
+    textAlign: 'center',
+    width: '100%',
+    color: 'white',
+    zIndex: 2,
   },
 });
