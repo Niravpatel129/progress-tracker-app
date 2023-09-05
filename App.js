@@ -79,6 +79,16 @@ export default function App() {
     setShowTrashIcon(true);
   };
 
+  const onScroll = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const itemWidth = 100; // This should be the width of your carousel item
+    const index = Math.floor(offsetX / itemWidth);
+    if (index >= 0 && index < selfieUris.length) {
+      setSelectedImageUri(selfieUris[index]);
+      setShowTrashIcon(true);
+    }
+  };
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -117,6 +127,7 @@ export default function App() {
       <View style={styles.carouselContainer}>
         <FlatList
           ref={flatListRef}
+          onScroll={onScroll} // Adding onScroll event listener
           data={[...selfieUris, { isCameraIcon: true }]}
           horizontal={true}
           keyExtractor={(item, index) => index.toString()}
