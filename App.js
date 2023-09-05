@@ -43,6 +43,11 @@ export default function App() {
   };
 
   const toggleCamera = () => {
+    // take image if camera is open
+    if (!selectedImageUri) {
+      takePicture();
+    }
+
     setSelectedImageUri(null);
     setShowTrashIcon(false);
   };
