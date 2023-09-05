@@ -19,7 +19,7 @@ export default function App() {
   const flatListRef = useRef(null);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [showTrashIcon, setShowTrashIcon] = useState(false);
-  const [lastVisibleIndex, setLastVisibleIndex] = useState(null);
+  const [lastPhotoDate, setLastPhotoDate] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -28,15 +28,32 @@ export default function App() {
     })();
   }, []);
 
+  const isSameDay = (date1, date2) => {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  };
+
   const takePicture = async () => {
+    const today = new Date();
+    if (lastPhotoDate && isSameDay(today, new Date(lastPhotoDate))) {
+      alert('You can only take one photo a day.');
+      return;
+    }
+
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync();
-      const newFileUri = FileSystem.documentDirectory + new Date().getTime() + '.jpg';
+      const newFileUri = FileSystem.documentDirectory + today.getTime() + '.jpg';
       await FileSystem.moveAsync({
         from: photo.uri,
         to: newFileUri,
       });
+
+      setLastPhotoDate(today);
       setLastSelfieUri(newFileUri);
+      setSelectedImageUri(newFileUri); // Automatically preview the photo
       setSelfieUris((prevSelfieUris) => [...prevSelfieUris, newFileUri]);
       flatListRef.current.scrollToEnd({ animated: true });
     }
@@ -54,6 +71,10 @@ export default function App() {
 
   const deleteSelectedImage = async () => {
     if (selectedImageUri) {
+      if (isSameDay(new Date(), new Date(lastPhotoDate))) {
+        setLastPhotoDate(null);
+      }
+
       // Delete the file from the filesystem
       await FileSystem.deleteAsync(selectedImageUri);
 
@@ -128,7 +149,11 @@ export default function App() {
         <FlatList
           ref={flatListRef}
           onScroll={onScroll} // Adding onScroll event listener
-          data={[...selfieUris, { isCameraIcon: true }]}
+          data={
+            lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())
+              ? [...selfieUris]
+              : [...selfieUris, { isCameraIcon: true }]
+          }
           horizontal={true}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) =>
