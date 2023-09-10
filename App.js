@@ -2,7 +2,6 @@ import { Camera } from "expo-camera";
 import * as FileSystem from "expo-file-system";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  FlatList,
   Image,
   Platform,
   Text,
@@ -11,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import { fakePictures } from "./data/fake_images";
+import ImageCarousel from "./src/components/ImageCarousel/ImageCarousel";
 import { styles } from "./src/styles/App.styles";
 
 export default function App() {
@@ -199,7 +198,13 @@ export default function App() {
           <Text style={styles.trashIcon}>🗑️</Text>
         </TouchableOpacity>
       )}
-      <View style={styles.carouselContainer}>
+      <ImageCarousel
+        data={selfieUris}
+        handleImageClick={handleImageClick}
+        flatListRef={flatListRef}
+        onScroll={onScroll}
+      />
+      {/* <View style={styles.carouselContainer}>
         <FlatList
           ref={flatListRef}
           onScroll={onScroll}
@@ -212,7 +217,7 @@ export default function App() {
             </TouchableOpacity>
           )}
         />
-      </View>
+      </View> */}
       <Text
         onPress={toggleCamera}
         style={{
