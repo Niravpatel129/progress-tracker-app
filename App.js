@@ -204,11 +204,6 @@ export default function App() {
           ref={flatListRef}
           onScroll={onScroll}
           data={fakePictures}
-          // data={
-          //   lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())
-          //     ? [...selfieUris]
-          //     : [...selfieUris, { isCameraIcon: true }]
-          // }
           horizontal
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
