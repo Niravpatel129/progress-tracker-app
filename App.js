@@ -1,15 +1,17 @@
-import { Camera } from 'expo-camera';
-import * as FileSystem from 'expo-file-system';
-import React, { useEffect, useRef, useState } from 'react';
+import { Camera } from "expo-camera";
+import * as FileSystem from "expo-file-system";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
-  StyleSheet,
+  Platform,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-} from 'react-native';
+} from "react-native";
+
+import { styles } from "./src/styles/App.styles";
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -20,11 +22,34 @@ export default function App() {
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [showTrashIcon, setShowTrashIcon] = useState(false);
   const [lastPhotoDate, setLastPhotoDate] = useState(null);
+  const fakePictures = [
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+    "https://cdn-cafdl.nitrocdn.com/fQHdfFSxWCuDmbpNBOTabVcchzVvBqxc/assets/images/optimized/rev-10d6093/blog/wp-content/uploads/2014/09/Ragdoll1.jpg",
+  ];
+
+  const isWeb = Platform.OS === "web";
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermission(status === "granted");
     })();
   }, []);
 
@@ -39,13 +64,14 @@ export default function App() {
   const takePicture = async () => {
     const today = new Date();
     if (lastPhotoDate && isSameDay(today, new Date(lastPhotoDate))) {
-      alert('You can only take one photo a day.');
+      alert("You can only take one photo a day.");
       return;
     }
 
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync();
-      const newFileUri = FileSystem.documentDirectory + today.getTime() + '.jpg';
+      const newFileUri =
+        FileSystem.documentDirectory + today.getTime() + ".jpg";
       await FileSystem.moveAsync({
         from: photo.uri,
         to: newFileUri,
@@ -60,6 +86,12 @@ export default function App() {
   };
 
   const toggleCamera = () => {
+    // if picture for today is taken show a small alert that todays picture is already taken
+    if (lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())) {
+      alert("You can only take one photo a day.");
+      return;
+    }
+
     // take image if camera is open
     if (!selectedImageUri) {
       takePicture();
@@ -68,6 +100,19 @@ export default function App() {
     setSelectedImageUri(null);
     setShowTrashIcon(false);
   };
+
+  const webContent = (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#222222",
+      }}
+    >
+      <Text>Camera not available on web.</Text>
+    </View>
+  );
 
   const deleteSelectedImage = async () => {
     if (selectedImageUri) {
@@ -79,17 +124,25 @@ export default function App() {
       await FileSystem.deleteAsync(selectedImageUri);
 
       // Remove the URI from selfieUris
-      const newSelfieUris = selfieUris.filter((uri) => uri !== selectedImageUri);
+      const newSelfieUris = selfieUris.filter(
+        (uri) => uri !== selectedImageUri,
+      );
       setSelfieUris(newSelfieUris);
 
       // Update lastSelfieUri if needed
       if (lastSelfieUri === selectedImageUri) {
-        setLastSelfieUri(newSelfieUris.length > 0 ? newSelfieUris[newSelfieUris.length - 1] : null);
+        setLastSelfieUri(
+          newSelfieUris.length > 0
+            ? newSelfieUris[newSelfieUris.length - 1]
+            : null,
+        );
       }
 
       // Update selectedImageUri to next available image or null
       setSelectedImageUri(
-        newSelfieUris.length > 0 ? newSelfieUris[newSelfieUris.length - 1] : null,
+        newSelfieUris.length > 0
+          ? newSelfieUris[newSelfieUris.length - 1]
+          : null,
       );
       setShowTrashIcon(newSelfieUris.length > 0);
     }
@@ -102,7 +155,7 @@ export default function App() {
 
   const onScroll = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
-    const itemWidth = 100; // This should be the width of your carousel item
+    const itemWidth = 50;
     const index = Math.floor(offsetX / itemWidth);
     if (index >= 0 && index < selfieUris.length) {
       setSelectedImageUri(selfieUris[index]);
@@ -111,113 +164,94 @@ export default function App() {
   };
 
   if (hasPermission === null) {
-    return <View />;
+    return (
+      <View>
+        <Text>Requesting for camera permission</Text>{" "}
+      </View>
+    );
   }
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
 
+  const cameraContent = (
+    <TouchableWithoutFeedback onPress={selectedImageUri ? null : takePicture}>
+      <Camera style={{ flex: 1 }} ref={(ref) => setCameraRef(ref)}>
+        {lastSelfieUri && !selectedImageUri && (
+          <Image
+            source={{ uri: lastSelfieUri }}
+            style={styles.fullScreenImage}
+          />
+        )}
+        {selectedImageUri && (
+          <>
+            <Image
+              source={{ uri: selectedImageUri }}
+              style={styles.fullScreenImagePreview}
+            />
+            <Text style={styles.imageTitle}>
+              {new Date(
+                parseInt(
+                  selectedImageUri.split("/").pop().split(".jpg")[0],
+                  10,
+                ),
+              ).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </Text>
+          </>
+        )}
+      </Camera>
+    </TouchableWithoutFeedback>
+  );
+
   return (
     <View style={{ flex: 1 }}>
-      <TouchableWithoutFeedback onPress={selectedImageUri ? null : takePicture}>
-        <Camera style={{ flex: 1 }} ref={(ref) => setCameraRef(ref)}>
-          {lastSelfieUri && !selectedImageUri && (
-            <Image source={{ uri: lastSelfieUri }} style={styles.fullScreenImage} />
-          )}
-          {selectedImageUri && (
-            <>
-              <Image source={{ uri: selectedImageUri }} style={styles.fullScreenImagePreview} />
-              <Text style={styles.imageTitle}>
-                {new Date(
-                  parseInt(selectedImageUri.split('/').pop().split('.jpg')[0], 10),
-                ).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </Text>
-            </>
-          )}
-        </Camera>
-      </TouchableWithoutFeedback>
+      {isWeb ? webContent : cameraContent}
+
       {showTrashIcon && (
-        <TouchableOpacity style={styles.trashIconContainer} onPress={deleteSelectedImage}>
+        <TouchableOpacity
+          style={styles.trashIconContainer}
+          onPress={deleteSelectedImage}
+        >
           <Text style={styles.trashIcon}>🗑️</Text>
         </TouchableOpacity>
       )}
       <View style={styles.carouselContainer}>
         <FlatList
           ref={flatListRef}
-          onScroll={onScroll} // Adding onScroll event listener
-          data={
-            lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())
-              ? [...selfieUris]
-              : [...selfieUris, { isCameraIcon: true }]
-          }
-          horizontal={true}
+          onScroll={onScroll}
+          data={fakePictures}
+          // data={
+          //   lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())
+          //     ? [...selfieUris]
+          //     : [...selfieUris, { isCameraIcon: true }]
+          // }
+          horizontal
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) =>
-            !item.isCameraIcon ? (
-              <TouchableOpacity onPress={() => handleImageClick(item)}>
-                <Image source={{ uri: item }} style={styles.carouselImage} />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={toggleCamera}>
-                <Text style={styles.cameraIcon}>📷</Text>
-              </TouchableOpacity>
-            )
-          }
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleImageClick(item)}>
+              <Image source={{ uri: item }} style={styles.carouselImage} />
+            </TouchableOpacity>
+          )}
         />
       </View>
+      <Text
+        onPress={toggleCamera}
+        style={{
+          position: "absolute",
+          bottom: 0,
+          color: "#c5c5c5",
+          right: 0,
+          fontSize: 48,
+          margin: 12,
+          zIndex: 2,
+        }}
+      >
+        +
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  carouselContainer: {
-    height: 100,
-    backgroundColor: 'white',
-  },
-  carouselImage: {
-    width: 100,
-    height: 100,
-  },
-  cameraIcon: {
-    fontSize: 48,
-    margin: 25,
-  },
-  fullScreenImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.5,
-  },
-  fullScreenImagePreview: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 1,
-  },
-  trashIconContainer: {
-    position: 'absolute',
-    right: 20,
-    bottom: 160,
-    zIndex: 2,
-  },
-  trashIcon: {
-    fontSize: 36, // Made the icon smaller
-  },
-  imageTitle: {
-    position: 'absolute',
-    bottom: 20,
-    fontSize: 24,
-    textAlign: 'center',
-    width: '100%',
-    color: 'white',
-    zIndex: 2,
-  },
-});
