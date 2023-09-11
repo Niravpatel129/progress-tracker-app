@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Camera } from "expo-camera";
 import * as FileSystem from "expo-file-system";
 import React, { useEffect, useRef, useState } from "react";
@@ -31,6 +32,41 @@ export default function App() {
       setHasPermission(status === "granted");
     })();
   }, []);
+
+  useEffect(() => {
+    // Load data from AsyncStorage when component mounts
+    const loadData = async () => {
+      try {
+        const storedUris = await AsyncStorage.getItem("selfieUris");
+        const storedLastPhotoDate = await AsyncStorage.getItem("lastPhotoDate");
+        if (storedUris !== null && storedLastPhotoDate !== null) {
+          setSelfieUris(JSON.parse(storedUris));
+          setLastPhotoDate(new Date(JSON.parse(storedLastPhotoDate)));
+        }
+      } catch (e) {
+        console.error("Couldn't load data", e);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    // Subscribe to updates to selfieUris
+    const saveData = async () => {
+      try {
+        await AsyncStorage.setItem("selfieUris", JSON.stringify(selfieUris));
+        await AsyncStorage.setItem(
+          "lastPhotoDate",
+          JSON.stringify(lastPhotoDate),
+        );
+      } catch (e) {
+        console.error("Couldn't save data", e);
+      }
+    };
+
+    saveData();
+  }, [selfieUris, lastPhotoDate]);
 
   const isSameDay = (date1, date2) => {
     return (
@@ -108,6 +144,14 @@ export default function App() {
       );
       setSelfieUris(newSelfieUris);
 
+      try {
+        if (isSameDay(new Date(), new Date(lastPhotoDate))) {
+          await AsyncStorage.setItem("lastPhotoDate", JSON.stringify(null));
+        }
+      } catch (e) {
+        console.error("Couldn't save data", e);
+      }
+
       // Update lastSelfieUri if needed
       if (lastSelfieUri === selectedImageUri) {
         setLastSelfieUri(
@@ -145,7 +189,7 @@ export default function App() {
   if (hasPermission === null) {
     return (
       <View>
-        <Text>Requesting for camera permission</Text>{" "}
+        <Text>Requesting for camera permission</Text>
       </View>
     );
   }
