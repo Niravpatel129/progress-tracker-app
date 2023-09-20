@@ -2,14 +2,15 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   carouselContainer: {
-    height: 60,
+    height: 80,
     backgroundColor: "white",
     marginBottom: 10,
     marginRight: 60,
   },
   carouselImage: {
-    width: 50,
-    height: 60,
+    width: 60,
+    height: 80,
+    marginRight: 1,
   },
   cameraIcon: {
     fontSize: 48,
@@ -42,8 +43,17 @@ export const styles = StyleSheet.create({
   },
   imageTitle: {
     position: "absolute",
-    bottom: 20,
-    fontSize: 24,
+    bottom: 15,
+    fontSize: 20,
+    textAlign: "center",
+    width: "100%",
+    color: "white",
+    zIndex: 2,
+  },
+  weight: {
+    position: "absolute",
+    bottom: 50,
+    fontSize: 44,
     textAlign: "center",
     width: "100%",
     color: "white",

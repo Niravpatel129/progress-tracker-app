@@ -33,6 +33,11 @@ export default function App() {
     })();
   }, []);
 
+  // useEffect(() => {
+  //   // clear the local storage
+  //   AsyncStorage.clear();
+  // }, []);
+
   useEffect(() => {
     // Load data from AsyncStorage when component mounts
     const loadData = async () => {
@@ -78,10 +83,10 @@ export default function App() {
 
   const takePicture = async () => {
     const today = new Date();
-    if (lastPhotoDate && isSameDay(today, new Date(lastPhotoDate))) {
-      alert("You can only take one photo a day.");
-      return;
-    }
+    // if (lastPhotoDate && isSameDay(today, new Date(lastPhotoDate))) {
+    //   alert("You can only take one photo a day.");
+    //   return;
+    // }
 
     if (cameraRef) {
       const photo = await cameraRef.takePictureAsync();
@@ -96,16 +101,20 @@ export default function App() {
       setLastSelfieUri(newFileUri);
       setSelectedImageUri(newFileUri); // Automatically preview the photo
       setSelfieUris((prevSelfieUris) => [...prevSelfieUris, newFileUri]);
-      flatListRef.current.scrollToEnd({ animated: true });
+
+      // wait 5 seconds then do it
+      setTimeout(() => {
+        flatListRef.current.scrollToEnd({ animated: true });
+      }, 500);
     }
   };
 
   const toggleCamera = () => {
     // if picture for today is taken show a small alert that todays picture is already taken
-    if (lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())) {
-      alert("You can only take one photo a day.");
-      return;
-    }
+    // if (lastPhotoDate && isSameDay(new Date(lastPhotoDate), new Date())) {
+    //   alert("You can only take one photo a day.");
+    //   return;
+    // }
 
     // take image if camera is open
     if (!selectedImageUri) {
@@ -176,10 +185,26 @@ export default function App() {
     setShowTrashIcon(true);
   };
 
+  const viewableItemsChanged = ({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      const lastVisibleItem = viewableItems[viewableItems.length - 1];
+      setSelectedImageUri(selfieUris[lastVisibleItem.index]);
+      setShowTrashIcon(true);
+    }
+  };
+
   const onScroll = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
-    const itemWidth = 50;
-    const index = Math.floor(offsetX / itemWidth);
+    const itemWidth = 50; // Replace with the actual width of your items
+    const viewWidth = 300; // Replace with the actual width of your FlatList view
+    const totalVisibleItems = Math.floor(viewWidth / itemWidth);
+    console.log("🚀  totalVisibleItems:", totalVisibleItems);
+
+    const approximateIndex = Math.floor((offsetX + viewWidth) / itemWidth) - 1;
+
+    // Ensure index is within bounds
+    const index = Math.min(approximateIndex, selfieUris.length - 1);
+
     if (index >= 0 && index < selfieUris.length) {
       setSelectedImageUri(selfieUris[index]);
       setShowTrashIcon(true);
@@ -247,6 +272,12 @@ export default function App() {
         handleImageClick={handleImageClick}
         flatListRef={flatListRef}
         onScroll={onScroll}
+        onViewableItemsChanged={({ viewableItems }) =>
+          viewableItemsChanged({ viewableItems })
+        }
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 50, // Adjust as needed
+        }}
       />
       {/* <View style={styles.carouselContainer}>
         <FlatList
@@ -266,10 +297,10 @@ export default function App() {
         onPress={toggleCamera}
         style={{
           position: "absolute",
-          bottom: 0,
+          bottom: 10,
           color: "#c5c5c5",
           right: 0,
-          fontSize: 48,
+          fontSize: 58,
           margin: 12,
           zIndex: 2,
         }}
