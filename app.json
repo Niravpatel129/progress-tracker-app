@@ -30,7 +30,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourdomain.dailyphotoprogress",
-      "buildNumber": "1.0.4"
+      "buildNumber": "1.0.6"
     },
     "android": {
       "package": "com.yourdomain.dailyphotoprogress",

@@ -7,8 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "submit": "eas submit --platform ios",
     "build": "eas build --platform ios",
+    "submit": "eas submit --platform ios",
     "deploy": "eas build --platform ios && eas submit --platform ios"
   },
   "dependencies": {

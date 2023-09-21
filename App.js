@@ -162,13 +162,13 @@ export default function App() {
       }
 
       // Update lastSelfieUri if needed
-      if (lastSelfieUri === selectedImageUri) {
-        setLastSelfieUri(
-          newSelfieUris.length > 0
-            ? newSelfieUris[newSelfieUris.length - 1]
-            : null,
-        );
-      }
+      // if (lastSelfieUri === selectedImageUri) {
+      //   setLastSelfieUri(
+      //     newSelfieUris.length > 0
+      //       ? newSelfieUris[newSelfieUris.length - 1]
+      //       : null,
+      //   );
+      // }
 
       // Update selectedImageUri to next available image or null
       setSelectedImageUri(
@@ -225,9 +225,14 @@ export default function App() {
   const cameraContent = (
     <TouchableWithoutFeedback onPress={selectedImageUri ? null : takePicture}>
       <Camera style={{ flex: 1 }} ref={(ref) => setCameraRef(ref)}>
-        {lastSelfieUri && !selectedImageUri && (
+        {!selectedImageUri && (
           <Image
-            source={{ uri: lastSelfieUri }}
+            source={{
+              uri:
+                selfieUris.length > 0
+                  ? selfieUris[selfieUris.length - 1]
+                  : null,
+            }}
             style={styles.fullScreenImage}
           />
         )}

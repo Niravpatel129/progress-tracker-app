@@ -12,11 +12,17 @@ const ImageCarousel = ({ data, handleImageClick, flatListRef, onScroll }) => (
       data={data}
       horizontal
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => handleImageClick(item)}>
-          <Image source={{ uri: item }} style={styles.carouselImage} />
-        </TouchableOpacity>
-      )}
+      renderItem={({ item }) => {
+        if (!item) {
+          return null;
+        }
+
+        return (
+          <TouchableOpacity onPress={() => handleImageClick(item)}>
+            <Image source={{ uri: item }} style={styles.carouselImage} />
+          </TouchableOpacity>
+        );
+      }}
     />
   </View>
 );
