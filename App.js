@@ -17,7 +17,6 @@ import { styles } from "./src/styles/App.styles";
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
-  const [lastSelfieUri, setLastSelfieUri] = useState(null);
   const [selfieUris, setSelfieUris] = useState([]);
   const flatListRef = useRef(null);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -98,7 +97,6 @@ export default function App() {
       });
 
       setLastPhotoDate(today);
-      setLastSelfieUri(newFileUri);
       setSelectedImageUri(newFileUri); // Automatically preview the photo
       setSelfieUris((prevSelfieUris) => [...prevSelfieUris, newFileUri]);
 
